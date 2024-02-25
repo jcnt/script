@@ -2,7 +2,7 @@
 #
 #
 #
-# simple python script to kill a random K8s pod in every 5 seconds
+# simple python script to kill a random K8s pod in every 10 seconds
 # handy to see how deployments and replicasets working
 
 

@@ -6,20 +6,21 @@
 # handy to see how deployments and replicasets working
 
 import os
-from random import choice
-from time import sleep
+import random
+import time
 
-def find_pod(): 
+
+def find_pod():
     podlist = []
     pods = os.popen("kubectl get pods --no-headers").read()
-    for i in pods.splitlines(): 
+    for i in pods.splitlines():
         podlist.append(i.split(" ")[0])
-    return choice(podlist)
+    return random.choice(podlist)
 
-while True: 
+
+while True:
     to_kill = find_pod()
     print("\nKilling pod")
     os.system(f"kubectl delete pod {to_kill}")
     print("\nSleeping for 10sec...  hit ctrl+c to stop\n")
-    sleep(10)
-
+    time.sleep(10)

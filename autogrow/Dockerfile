@@ -2,7 +2,7 @@ FROM alpine:latest
 
 WORKDIR /mnt
 
-COPY ./grow.sh /mnt/grow.sh
+COPY ./grower.sh /mnt/grower.sh
 
-CMD ["/mnt/grow.sh"]
+CMD ["/mnt/grower.sh"]
 

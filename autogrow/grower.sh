@@ -4,15 +4,21 @@ wget https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl -O /mnt/kubectl
 
 while :; do 
 
-    USED=`df |grep mnt | awk {'print $3'}`
-    SIZE=`df |grep mnt | awk {'print $2'}`
+    USED=`df |grep mnt | awk {'print $(NF-3)'}`
+    SIZE=`df |grep mnt | awk {'print $(NF-4)'}`
     PCT=$(( USED * 100 / SIZE ))
     SEC=`date +%H%M%S`
 
-    echo $PCT
-    echo $USED
-    echo $SIZE
-    echo
+    if [[ "$DEBUG" == "yes" ]]; then
+        echo -n "Percentage:   "
+        echo $PCT
+        echo -n "Used:         "
+        echo $USED
+        echo -n "Size:         "
+        echo $SIZE
+        echo
+    fi
+
 
     if [[ "$SIZE" -lt "10000000" ]]; then
 
@@ -23,6 +29,7 @@ while :; do
 
     fi
 
+    sync
     sleep 1
 
 done

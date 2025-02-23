@@ -10,10 +10,13 @@ while :; do
     SEC=`date +%H%M%S`
 
     echo $PCT
+    echo $USED
+    echo $SIZE
+    echo
 
-    if [[ $SIZE < 10000000 ]]; then
+    if [[ "$SIZE" -lt "10000000" ]]; then
 
-        if [[ $PCT < 80 ]]; then
+        if [[ "$PCT" -lt "80" ]]; then
             cp /mnt/kubectl /mnt/kubectl.$SEC
             sync
         fi

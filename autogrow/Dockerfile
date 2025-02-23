@@ -1,8 +1,8 @@
 FROM alpine:latest
 
-WORKDIR /mnt
+WORKDIR /app
 
-COPY ./grower.sh /mnt/grower.sh
+COPY ./grower.sh /app/grower.sh
 
-CMD ["/mnt/grower.sh"]
+CMD ["/app/grower.sh"]
 

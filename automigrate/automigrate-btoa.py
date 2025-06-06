@@ -68,15 +68,19 @@ while resp != 200:
 
 print("\nConnecting Vol on second array...", resp)
 
+print()
 print("Running rescan on iSCSI paths")
 os.system("ssh rhel sudo iscsiadm -m session --rescan")
+print()
 time.sleep(5)
 
 response = fab.delete_connections(volume_names=[podvol], host_names=["jjRHEL"])
 print("Removing host connection on source...", response.status_code)
 
+print()
 print("Running rescan on iSCSI paths")
 os.system("ssh rhel sudo iscsiadm -m session --rescan")
+print()
 
 response = faa.delete_pods_members(pod_names=[POD], member_names=["PureCZ-FA-B"])
 print("Removing source from pod...", response.status_code)
@@ -85,5 +89,12 @@ container = {"pod": {"name": ""}}
 response = faa.patch_volumes(names=[podvol], volume=container)
 print("Moving volume out from the Pod...", response.status_code)
 
-# response = fab.delete_pods(names=[POD])
-# print("Deleting Pod on source...", response.status_code)
+response = fab.delete_pods(names=[POD + ".restretch"])
+print("Eradicate restretch Pod on source...", response.status_code)
+
+destroy = {"destroyed": True}
+response = faa.patch_pods(pod=destroy, names=[POD])
+print("Destroy Pod on target...", response.status_code)
+
+response = faa.delete_pods(names=[POD])
+print("Eradicate Pod on target...", response.status_code)

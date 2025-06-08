@@ -42,6 +42,9 @@ PODVOL = POD + "::" + VOL
 src = flasharray.Client(SRC, api_token=tdb[SRC], verify_ssl=False)
 dst = flasharray.Client(DST, api_token=tdb[DST], verify_ssl=False)
 
+response = src.get_connections(volume_names=[VOL])
+HOST = list(response.items)[0]["host"]["name"]
+
 print(f"Migrating {VOL} from {fullname[SRC]} to {fullname[DST]}...")
 
 pod = flasharray.PodPost()
@@ -67,7 +70,7 @@ resp = 400
 while resp != 200:
     print(".", end="", flush=True)
     time.sleep(1)
-    response = dst.post_connections(volume_names=[PODVOL], host_names=["jjRHEL"])
+    response = dst.post_connections(volume_names=[PODVOL], host_names=[HOST])
     resp = response.status_code
 
 print("\nConnecting Vol on second array...", resp)
@@ -78,7 +81,7 @@ os.system("ssh rhel sudo iscsiadm -m session --rescan")
 print()
 time.sleep(5)
 
-response = src.delete_connections(volume_names=[PODVOL], host_names=["jjRHEL"])
+response = src.delete_connections(volume_names=[PODVOL], host_names=[HOST])
 print("Removing host connection on source...", response.status_code)
 
 print()
@@ -104,4 +107,4 @@ response = dst.delete_pods(names=[POD])
 print("Eradicate Pod on target...", response.status_code)
 
 # todo:
-# - poll the source array for host connections into variable
+# - make it work with hostgroup as well

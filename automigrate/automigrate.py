@@ -30,7 +30,7 @@ fullname = {
 }
 
 if len(sys.argv) < 4:
-    print(f"Usage: {sys.argv[0]} <volume name> <source array> <destination array>")
+    print(f"Usage: {sys.argv[0]} <volname> <source array> <destination array>")
     quit()
 
 VOL = sys.argv[1]
@@ -42,21 +42,21 @@ PODVOL = POD + "::" + VOL
 src = flasharray.Client(SRC, api_token=tdb[SRC], verify_ssl=False)
 dst = flasharray.Client(DST, api_token=tdb[DST], verify_ssl=False)
 
-response = src.get_connections(volume_names=[VOL])
-HOST = list(response.items)[0]["host"]["name"]
+resp = src.get_connections(volume_names=[VOL])
+HOST = list(resp.items)[0]["host"]["name"]
 
 print(f"Migrating {VOL} from {fullname[SRC]} to {fullname[DST]}...")
 
 pod = flasharray.PodPost()
-response = src.post_pods(pod=pod, names=[POD])
-print("Creating Pod...", response.status_code)
+resp = src.post_pods(pod=pod, names=[POD])
+print("Creating Pod...", resp.status_code)
 
 container = {"pod": {"name": POD}}
-response = src.patch_volumes(names=[VOL], volume=container)
-print("Moving volume to Pod...", response.status_code)
+resp = src.patch_volumes(names=[VOL], volume=container)
+print("Moving volume to Pod...", resp.status_code)
 
-response = src.post_pods_arrays(member_names=[fullname[DST]], group_names=[POD])
-print("Adding Pod member...", response.status_code)
+resp = src.post_pods_arrays(member_names=[fullname[DST]], group_names=[POD])
+print("Adding Pod member...", resp.status_code)
 
 resp = 400
 print("waiting for pod sync", end="", flush=True)
@@ -81,30 +81,30 @@ os.system("ssh rhel sudo iscsiadm -m session --rescan")
 print()
 time.sleep(5)
 
-response = src.delete_connections(volume_names=[PODVOL], host_names=[HOST])
-print("Removing host connection on source...", response.status_code)
+resp = src.delete_connections(volume_names=[PODVOL], host_names=[HOST])
+print("Removing host connection on source...", resp.status_code)
 
 print()
 print("Running rescan on iSCSI paths")
 os.system("ssh rhel sudo iscsiadm -m session --rescan")
 print()
 
-response = dst.delete_pods_members(pod_names=[POD], member_names=[fullname[SRC]])
-print("Removing source array from pod...", response.status_code)
+resp = dst.delete_pods_members(pod_names=[POD], member_names=[fullname[SRC]])
+print("Removing source array from pod...", resp.status_code)
 
 container = {"pod": {"name": ""}}
-response = dst.patch_volumes(names=[PODVOL], volume=container)
-print("Moving volume out of the Pod...", response.status_code)
+resp = dst.patch_volumes(names=[PODVOL], volume=container)
+print("Moving volume out of the Pod...", resp.status_code)
 
-response = src.delete_pods(names=[POD + ".restretch"])
-print("Eradicate restretch Pod on source...", response.status_code)
+resp = src.delete_pods(names=[POD + ".restretch"])
+print("Eradicate restretch Pod on source...", resp.status_code)
 
 destroy = {"destroyed": True}
-response = dst.patch_pods(pod=destroy, names=[POD])
-print("Destroy Pod on target...", response.status_code)
+resp = dst.patch_pods(pod=destroy, names=[POD])
+print("Destroy Pod on target...", resp.status_code)
 
-response = dst.delete_pods(names=[POD])
-print("Eradicate Pod on target...", response.status_code)
+resp = dst.delete_pods(names=[POD])
+print("Eradicate Pod on target...", resp.status_code)
 
 # todo:
 # - make it work with hostgroup as well

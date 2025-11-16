@@ -106,8 +106,5 @@ print("Destroy Pod on target...", resp.status_code)
 resp = dst.delete_pods(names=[POD])
 print("Eradicate Pod on target...", resp.status_code)
 
-"""
-TODO:
-- make it work with hostgroup as well
-- exit if the volume does not exist on the source array
-"""
+# - make it work with hostgroup as well
+# - exit if the volume does not exist on the source array

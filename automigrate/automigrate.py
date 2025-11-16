@@ -15,7 +15,7 @@ from pypureclient import flasharray
 urllib3.disable_warnings()
 
 tdb = {}
-with open("/home/jacint/.fatoken") as token:
+with open("/home/jacint/.fatoken", encoding="ascii") as token:
     lines = token.readlines()
 
 for line in lines:
@@ -31,7 +31,7 @@ fullname = {
 
 if len(sys.argv) < 4:
     print(f"Usage: {sys.argv[0]} <volname> <source array> <destination array>")
-    quit()
+    sys.exit()
 
 VOL = sys.argv[1]
 SRC = sys.argv[2].upper()
@@ -106,5 +106,8 @@ print("Destroy Pod on target...", resp.status_code)
 resp = dst.delete_pods(names=[POD])
 print("Eradicate Pod on target...", resp.status_code)
 
-# todo:
-# - make it work with hostgroup as well
+"""
+TODO:
+- make it work with hostgroup as well
+- exit if the volume does not exist on the source array
+"""
